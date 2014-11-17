@@ -3,27 +3,10 @@ import six
 import api_version
 from versioned_function import VersionedFunction
 
-class VersionedObjectMetaClass(type):
-    """Metaclass"""
-    
-    def __new__(mcs, name, bases, cls_dict):
-
-        for key, value in cls_dict.items():
-            # We need to remove the raw method name from the class
-            # for versioned methods so __getattr_ will get invoked
-            # and we can search for the correct one
-            if getattr(value, 'multiversion', None):
-                del cls_dict[key]
-        
-        return super(VersionedObjectMetaClass, mcs).__new__(
-            mcs, name, bases, cls_dict)
-
-
-@six.add_metaclass(VersionedObjectMetaClass)
 class VersionedObject(object):
     """Base class for classes that support versioning of their methods."""
 
-    def __getattr__(self, key):
+    def __getattribute__(self, key):
         
         def version_select(*args, **kwargs):
             """
@@ -41,7 +24,6 @@ class VersionedObject(object):
             ver = args[0]
 
             func_list = self.versioned_functions[key]
-#            print "Possible: ", func_list
             for func in func_list:
                 if ver.matches(func.start_version, func.end_version):
                     return func.func(self, *args, **kwargs)
@@ -49,8 +31,10 @@ class VersionedObject(object):
             # No version match
             raise AttributeError
 
-        if key in self.versioned_functions:
+        if key in object.__getattribute__(self, 'versioned_functions'):
             return version_select
+        else:
+            return object.__getattribute__(self, key)
 
         # No method name match
         raise AttributeError
@@ -83,7 +67,6 @@ class VersionedObject(object):
         """
 
         def decorator(f):
-            f.multiversion = True
             obj_min_ver = api_version.APIVersion(min_ver)
             if max_ver:
                 obj_max_ver = api_version.APIVersion(max_ver)
