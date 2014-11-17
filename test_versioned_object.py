@@ -10,8 +10,8 @@ ver3 = APIVersion("1.0.0")
 
 print "Finished init"
 
-print myobj.add(ver, 1, 2) # Expect normal add result
-print myobj.add(ver2, 1, 2) # Expect wierd add result
+print myobj.add(ver, 1, 2) # Expect broken add result
+print myobj.add(ver2, 1, 2) # Expect fixed add result
 
 try:
     print myobj.add(ver3, 1, 2) # Expect no match to a method to be made
