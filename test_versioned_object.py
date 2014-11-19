@@ -4,9 +4,9 @@ from test_object import TestObject
 from api_version import APIVersion
 
 myobj = TestObject()
-ver = APIVersion("1.2.3")
-ver2 = APIVersion("2.2.3")
-ver3 = APIVersion("1.0.0")
+ver = APIVersion("1.2")
+ver2 = APIVersion("2.2")
+ver3 = APIVersion("1.0")
 
 print "Finished init"
 
